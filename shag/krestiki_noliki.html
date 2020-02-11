@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Krestiki_Noliki</title>
+
+    <style>
+        .form-step {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<form id="myFormStep1" class="form-step"
+      style="display: block;" data-next="myFormStep2">
+
+    <p>Step 1</p>
+    <input type="text" name="name" />
+    <input type="email" name="email" />
+    <input type="submit" value="Send" />
+
+</form>
+
+<form id="myFormStep2" class="form-step" data-next="thanks">
+
+    <p>Step 2</p>
+    <input type="text" name="friend_name" />
+    <input type="email" name="friend_email" />
+    <input type="submit" value="Send" />
+
+</form>
+
+<div id="thanks" class="form-step">
+    <p>Thank you</p>
+    <button id="reset">Reset</button>
+</div>
+
+<script>
+    class State {
+        constructor() {
+            this.state = {};
+        }
+
+        setValue(key, value) {
+            this.state[key] = value;
+        }
+
+        reset() {
+            let forms = Array.from(document.querySelectorAll('form.form-step'));
+
+            this.state = {};
+            for(let f of forms) {
+                f.reset();
+            }
+        }
+    }
+
+
+    let form1 = myFormStep1, form2 = myFormStep2, storage = new State(),
+        forms = Array.from(document.querySelectorAll('.form-step'));
+
+    reset.onclick = function () {
+        thanks.style.display = 'none';
+        form1.style.display = 'block';
+
+        storage.reset();
+    };
+
+    for(let el of forms) {
+        el.onchange = function (event) {
+            let changeKey = event.target.getAttribute('name'),
+                changeValue = event.target.value;
+
+            storage.setValue(changeKey, changeValue);
+        };
+
+        el.onsubmit = function (event) {
+            event.preventDefault();
+
+            // Выбираем следующий элемент
+            let nextEl = document.getElementById(event.target.dataset.next);
+
+            // Проверяем существование следующего элемента
+            if(nextEl) {
+                event.target.style.display = 'none';
+                nextEl.style.display = 'block';
+
+                if(nextEl.tagName !== 'FORM') {
+                    // Обработка последнего шага
+                    alert('Форма отправлена')
+                }
+            }
+        }
+    }
+
+</script>
+
+</body>
+</html>
